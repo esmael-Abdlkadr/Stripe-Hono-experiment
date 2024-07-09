@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://js.stripe.com/v3/"></script>
+    <title>checkout</title>
+  </head>
+  <body>
+    <h1>checkout</h1>
+    <button id="checkoutButton">checkout</button>
+    <script>
+      const checkoutButton = document.getElementById("checkoutButton");
+      checkoutButton.addEventListener("click", async () => {
+        const response = await fetch("/checkout", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            items: [
+              { id: "1", quantity: 1 },
+              { id: "2", quantity: 2 },
+            ],
+          }),
+        });
+        const { id } = await response.json();
+        const stripe = stripe(`${process.env.STRIPE_PUBLISHABLE_KEY}`);
+        await stripe.redirectToCheckout({ sessionId: id });
+      });
+    </script>
+  </body>
+</html>
